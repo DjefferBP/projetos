@@ -40,14 +40,14 @@ namespace AtividadeValendoNota
                 {
                     option = Convert.ToInt32(ReadLine());
                 }
-                catch (System.FormatException)
+                catch (FormatException)
                 {
-                    WriteLine("Por favor, digite uma opção entre 1 e " + opcoes.Length);
+                    Clear();
                     continue;
                 }
                 catch (Exception)
                 {
-                    WriteLine("Um erro aconteceu!! Tente novamente");
+                    Clear();
                     continue;
                 }
                 switch (option)
@@ -233,7 +233,7 @@ namespace AtividadeValendoNota
                         break;
                     } while (true);
                 }
-                catch (System.FormatException)
+                catch (FormatException)
                 {
                     WriteLine("Erro de digitação, por favor refaça a operação");
                     alunos.Remove(nome);
@@ -797,7 +797,7 @@ namespace AtividadeValendoNota
                             } while (true);
 
                         }
-                        catch (System.FormatException)
+                        catch (FormatException)
                         {
                             WriteLine("Erro de digitação, por favor refaça a operação");
                             WriteLine("Pressione qualquer tecla para voltar.");
@@ -830,7 +830,7 @@ namespace AtividadeValendoNota
                                 break;
                             } while (true);
                         }
-                        catch (System.FormatException)
+                        catch (FormatException)
                         {
                             WriteLine("Erro de digitação, por favor refaça a operação");
                             WriteLine("Pressione qualquer tecla para voltar.");
@@ -901,6 +901,7 @@ namespace AtividadeValendoNota
                 Write("DIGITE O NOME DO ALUNO A SER EDITADO: ");
                 string nome = ReadLine();
                 int indexAluno = alunos.IndexOf(nome);
+                string nomeAntigo = alunos[indexAluno];
                 if (indexAluno >= 0)
                 {
                     WriteLine($"O aluno a ser editado é o {alunos[indexAluno]}.\n");
@@ -949,6 +950,7 @@ namespace AtividadeValendoNota
                                 if (string.IsNullOrWhiteSpace(novaTurma))
                                 {
                                     WriteLine("A turma do aluno não pode ser vazio. Por favor, insira um valor válido.");
+                                    alunos[indexAluno] = nomeAntigo;
                                 }
                             } while (string.IsNullOrWhiteSpace(novaTurma));
                             string novoCodigoTurma = "";
@@ -956,11 +958,11 @@ namespace AtividadeValendoNota
                             {
                                 Write("Digite o novo código da turma do aluno: ");
                                 nomeNovo = ReadLine();
-                                if (string.IsNullOrWhiteSpace(novoCodigoTurma))
+                                if (string.IsNullOrWhiteSpace(nomeNovo))
                                 {
                                     WriteLine("O código da turma do aluno não pode ser vazio. Por favor, insira um valor válido.");
                                 }
-                            } while (string.IsNullOrWhiteSpace(novoCodigoTurma));
+                            } while (string.IsNullOrWhiteSpace(nomeNovo));
 
                             int indexNovaTurma = turmas.IndexOf(novaTurma);
                             int indexNovoCodigo = codigoIdentificador.IndexOf(novoCodigoTurma);
@@ -972,9 +974,6 @@ namespace AtividadeValendoNota
                                 ForegroundColor = ConsoleColor.Green;
                                 WriteLine("Turma do aluno editada com sucesso!");
                                 ResetColor();
-                                WriteLine("Pressione qualquer tecla para voltar.");
-                                ReadKey();
-                                Clear();
                             }
                             else
                             {
@@ -984,6 +983,7 @@ namespace AtividadeValendoNota
                                 WriteLine("Pressione qualquer tecla para voltar.");
                                 ReadKey();
                                 Clear();
+                                return;
                             }
                         }
                         else
@@ -1025,6 +1025,11 @@ namespace AtividadeValendoNota
                             {
                                 ForegroundColor = ConsoleColor.Red;
                                 WriteLine("Código de turma ou nome de turma não encontrado! Refaça a operação.");
+                                ResetColor();
+                                WriteLine("Pressione qualquer tecla para voltar.");
+                                ReadKey();
+                                Clear();
+                                return;
                             }
                         }
 
@@ -1045,7 +1050,7 @@ namespace AtividadeValendoNota
                                 break;
                             } while (true);
                         }
-                        catch (System.FormatException)
+                        catch (FormatException)
                         {
                             WriteLine("Erro de digitação, por favor refaça a operação");
                             WriteLine("Pressione qualquer tecla para voltar.");
@@ -1078,7 +1083,7 @@ namespace AtividadeValendoNota
                                 break;
                             } while (true);
                         }
-                        catch (System.FormatException)
+                        catch (FormatException)
                         {
                             WriteLine("Erro de digitação, por favor refaça a operação");
                             WriteLine("Pressione qualquer tecla para voltar.");
@@ -1426,112 +1431,119 @@ namespace AtividadeValendoNota
         private static void gravarArquivo()
         {
             Clear();
-            WriteLine("=============================================");
-            WriteLine("=           GRAVAR NO ARQUIVO               =");
-            WriteLine("=============================================");
-            WriteLine();
-            try
+            if (alunos.Count == 0)
             {
-                StreamWriter dadosnomes;
-                string arq = @"C:\Nomes\alunos.txt";
-                string arq1 = @"C:\Nomes\turmas.txt";
-                string arq2 = @"C:\Nomes\codigoTurma.txt";
-                string arq3 = @"C:\Nomes\nota1.txt";
-                string arq4= @"C:\Nomes\nota2.txt";
-                string arq5 = @"C:\Nomes\media.txt";
-
-                dadosnomes = File.CreateText(arq);
-                foreach (var item in alunos)
-                {
-                    dadosnomes.WriteLine($"{item}");
-                }
-                dadosnomes.Close();
-
-                dadosnomes = File.CreateText(arq1);
-                foreach (var item in turmas)
-                {
-                    for (int i = 0; i < alunos.Count; i++)
-                    {
-                        string cod = codigoAluno[i];
-                        int indexTurma = codigoIdentificador.IndexOf(cod);
-                        string nomeTurma;
-
-                        if (indexTurma >= 0)
-                        {
-                            nomeTurma = turmas[indexTurma];
-                            dadosnomes.WriteLine($"{nomeTurma}");
-                        }
-                        else
-                        {
-                            nomeTurma = "[REMOVIDA]";
-                            dadosnomes.WriteLine($"{nomeTurma}");
-                        }
-                    }
-                }
-                dadosnomes.Close();
-
-                dadosnomes = File.CreateText(arq2);
-                foreach (var item in codigoIdentificador)
-                {
-                    for (int i = 0; i < alunos.Count; i++)
-                    {
-                        string cod = codigoAluno[i];
-                        int indexTurma = codigoIdentificador.IndexOf(cod);
-                        string codigoTurma;
-
-                        if (indexTurma >= 0)
-                        {
-                            codigoTurma = cod;
-                            dadosnomes.WriteLine($"{codigoTurma}");
-                        }
-                        else
-                        {
-                            codigoTurma = "N/A";
-                            dadosnomes.WriteLine($"{codigoTurma}");
-                        }
-                    }
-                }
-                dadosnomes.Close();
-
-                dadosnomes = File.CreateText(arq3);
-                foreach (var item in notas1)
-                {
-                    dadosnomes.WriteLine($"{item}");
-                }
-                dadosnomes.Close();
-
-                dadosnomes = File.CreateText(arq4);
-                foreach (var item in notas2)
-                {
-                    dadosnomes.WriteLine($"{item}");
-                }
-                dadosnomes.Close();
-
-                dadosnomes = File.CreateText(arq5);
-                foreach (var item in mediaCadaAluno)
-                {
-                    dadosnomes.WriteLine($"{item}");
-                }
-                dadosnomes.Close();
-
+                WriteLine("Nenhum aluno cadastrado para salvar em um arquivo.");
+                WriteLine("Pressione qualquer tecla para voltar.");
+                ReadKey();
+                Clear();
+                return;
             }
-            catch (Exception e)
+            else
             {
-                WriteLine($"{e.Message}");
-            }
-            finally
-            {
-                WriteLine("<<<<<< DADOS GRAVADOS COM SUCESSO! >>>>>>");
+                WriteLine("GRAVAR ARQUIVO");
                 WriteLine();
+                try
+                {
+                    StreamWriter dadosnomes;
+                    string arq = @"C:\Nomes\alunos.txt";
+                    string arq1 = @"C:\Nomes\turmas.txt";
+                    string arq2 = @"C:\Nomes\codigoTurma.txt";
+                    string arq3 = @"C:\Nomes\nota1.txt";
+                    string arq4 = @"C:\Nomes\nota2.txt";
+                    string arq5 = @"C:\Nomes\media.txt";
+
+                    dadosnomes = File.CreateText(arq);
+                    foreach (var item in alunos)
+                    {
+                        dadosnomes.WriteLine($"{item}");
+                    }
+                    dadosnomes.Close();
+
+                    dadosnomes = File.CreateText(arq1);
+                    foreach (var item in turmas)
+                    {
+                        for (int i = 0; i < alunos.Count; i++)
+                        {
+                            string cod = codigoAluno[i];
+                            int indexTurma = codigoIdentificador.IndexOf(cod);
+                            string nomeTurma;
+
+                            if (indexTurma >= 0)
+                            {
+                                nomeTurma = turmas[indexTurma];
+                                dadosnomes.WriteLine($"{nomeTurma}");
+                            }
+                            else
+                            {
+                                nomeTurma = "[REMOVIDA]";
+                                dadosnomes.WriteLine($"{nomeTurma}");
+                            }
+                        }
+                    }
+                    dadosnomes.Close();
+
+                    dadosnomes = File.CreateText(arq2);
+                    foreach (var item in codigoIdentificador)
+                    {
+                        for (int i = 0; i < alunos.Count; i++)
+                        {
+                            string cod = codigoAluno[i];
+                            int indexTurma = codigoIdentificador.IndexOf(cod);
+                            string codigoTurma;
+
+                            if (indexTurma >= 0)
+                            {
+                                codigoTurma = cod;
+                                dadosnomes.WriteLine($"{codigoTurma}");
+                            }
+                            else
+                            {
+                                codigoTurma = "N/A";
+                                dadosnomes.WriteLine($"{codigoTurma}");
+                            }
+                        }
+                    }
+                    dadosnomes.Close();
+
+                    dadosnomes = File.CreateText(arq3);
+                    foreach (var item in notas1)
+                    {
+                        dadosnomes.WriteLine($"{item}");
+                    }
+                    dadosnomes.Close();
+
+                    dadosnomes = File.CreateText(arq4);
+                    foreach (var item in notas2)
+                    {
+                        dadosnomes.WriteLine($"{item}");
+                    }
+                    dadosnomes.Close();
+
+                    dadosnomes = File.CreateText(arq5);
+                    foreach (var item in mediaCadaAluno)
+                    {
+                        dadosnomes.WriteLine($"{item}");
+                    }
+                    dadosnomes.Close();
+
+                }
+                catch (Exception e)
+                {
+                    WriteLine($"{e.Message}");
+                }
+                finally
+                {
+                    WriteLine("DADOS GRAVADOS COM SUCESSO!");
+                    WriteLine();
+                }
             }
         }
 
         private static void lerArquivo()
         {
             Clear();
-            WriteLine("=============================================");
-            WriteLine("=              LER ARQUIVO                  =");
-            WriteLine("=============================================");
+            WriteLine("LER ARQUIVO");
             WriteLine();
 
             alunos.Clear();
@@ -1575,7 +1587,7 @@ namespace AtividadeValendoNota
                     codigoAluno.Add(codigoIdentificador[i]);
                 }
             }
-            
+
             var nota1A = File.ReadAllLines(@"C:\Nomes\nota1.txt");
             for (int i = 0; i < nota1A.Length; i++)
             {
@@ -1594,7 +1606,7 @@ namespace AtividadeValendoNota
                 double media = Convert.ToDouble(mediaAlunoA[i]);
                 mediaCadaAluno.Add(media);
             }
-            WriteLine("<<<<<<< LEITURA REALIZADA COM SUCESSO! >>>>>>>");
+            WriteLine("LEITURA REALIZADA COM SUCESSO!");
         }
     }
 }
