@@ -1,2 +1,2 @@
 #  PROJETOS
-Aqui estará os projetos/avalia~ções
+Aqui estará os projetos/avaliações.
